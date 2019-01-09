@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { Platform, Dimensions, StyleSheet, View, ScrollView, Text } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Card from './src/components/Card'
 
 const { width, height } = Dimensions.get('window')
 
@@ -17,6 +20,27 @@ export default class App extends Component {
     ]
   }
 
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // this.setState({
+        //   latitude: position.coords.latitude,
+        //   longitude: position.coords.longitude,
+        // })
+
+        this.mapView.animateToCoordinate({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }, 500);
+
+        // setTimeout(() => {
+        //   mark.showCallout();
+        // }, 500)
+      },
+      // (error) => this.setState({ error: error.message }),
+    );
+  }
+
   render() {
     let { latitude, longitude, patinetes } = this.state
 
@@ -25,8 +49,8 @@ export default class App extends Component {
         <MapView
           ref={map => this.mapView = map}
           initialRegion={{
-            latitude,
-            longitude,
+            latitude: 0,
+            longitude: 0,
             latitudeDelta: 0.0055,
             longitudeDelta: 0.0055,
           }}
@@ -45,6 +69,15 @@ export default class App extends Component {
               }} />
           ))}
         </MapView>
+
+        <View style={styles.toolbar}>
+          <Icon name="bars" size={18} />
+          <View style={styles.title}>
+            <Text style={styles.titlePre}>MyLittle</Text>
+            <Text style={styles.titlePos}>Patinete</Text>
+          </View>
+          <Icon name="crosshairs" size={18} />
+        </View>
 
         <ScrollView
           horizontal
@@ -65,14 +98,7 @@ export default class App extends Component {
             }, 500)
           }} style={styles.cardList}>
           {patinetes.map((patinete, index, patinetes) => (
-            <View
-              key={patinete.id}
-              style={styles.card}>
-              <Text>{index + 1}/{patinetes.length}</Text>
-              <Text>{patinete.code}</Text>
-              <Text>{patinete.busy}</Text>
-              <Text>{patinete.battery}</Text>
-            </View>
+            <Card data={patinete} index={index} length={patinetes.length} key={patinete.id} />
           ))}
         </ScrollView>
       </View>
@@ -83,8 +109,30 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'flex-end',
+  },
+  toolbar: {
+    width: width - 40,
+    marginHorizontal: 20,
+    marginTop: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  title: {
+    flexDirection: 'row',
+  },
+  titlePre: {
+    fontSize: 18,
+  },
+  titlePos: {
+    fontSize: 18,
+    fontWeight: '800',
   },
   mapView: {
     position: 'absolute',
@@ -95,15 +143,18 @@ const styles = StyleSheet.create({
   },
   cardList: {
     width: '100%',
-    maxHeight: 200,
+    maxHeight: 196,
   },
   card: {
     width: width - 40,
-    maxHeight: 200,
+    maxHeight: 196,
     backgroundColor: '#FFF',
     marginHorizontal: 20,
     marginVertical: 20,
     padding: 20,
-    borderRadius: 10,
+    // borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 0 },
   }
 });
