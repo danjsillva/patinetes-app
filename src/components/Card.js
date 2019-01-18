@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Platform, Dimensions, StyleSheet, View, Text } from 'react-native'
+import { Platform, Dimensions, StyleSheet, View, Text, TouchableOpacity, Button } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Battery from './Battery'
@@ -8,26 +8,28 @@ const { width, height } = Dimensions.get('window')
 
 export default class Card extends Component {
   render() {
-    return (
-      <View
-        key={this.props.data.id}
-        style={styles.card}>
+    const { data, index, total } = this.props
 
+    return (
+      <View style={styles.card}>
         <View style={styles.icon}>
           <Icon name="map-marker" size={48} />
         </View>
 
         <View style={styles.content}>
           <View style={styles.titlebar}>
-            <Text style={styles.title}>{this.props.data.code}</Text>
-            <Battery data={this.props.data.battery} />
+            <Text style={styles.title}>{data.code}</Text>
+            <Battery data={data.battery} />
           </View>
-            {/* <Text>{this.props.data.battery}</Text> */}
 
           <View style={styles.info}>
-            <Text>{this.props.index + 1}/{this.props.length}</Text>
-            <Text>{this.props.data.busy}</Text>
+            <Text>{index + 1}/{total}</Text>
+            <Text>{data.busy}</Text>
           </View>
+
+          <TouchableOpacity style={styles.button} onPress={() => this.props.onPatineteSelected(data.latitude, data.longitude)} >
+            <Text style={styles.buttonText}>SELECIONAR ESTE PATINETE</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -45,16 +47,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 20,
     padding: 20,
-    // borderRadius: 10,
+    elevation: 5,
     shadowColor: '#000',
     shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: { x: 0, y: 0 },
+    shadowRadius: 15,
   },
   icon: {
     marginRight: 20,
   },
   content: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    // borderWidth: 2,
   },
   titlebar: {
     flexDirection: 'row',
@@ -65,5 +71,17 @@ const styles = StyleSheet.create({
   },
   info: {
 
+  },
+  button: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxHeight: 32,
+    backgroundColor: '#007aff',
+    marginTop: 30,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
   },
 });
