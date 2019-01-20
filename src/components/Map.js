@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps'
+
+import { getPixelSize } from '../utils'
 
 import Directions from './Directions'
 
 export default class Map extends Component {
     state = {
-        
+        duration: 0,
     }
 
     render() {
         const { patinetes, region, destination } = this.props
+        const { duration } = this.state
 
         return (
             <MapView
@@ -23,17 +26,19 @@ export default class Map extends Component {
                 // zoomEnabled={false}
                 style={styles.mapView}
             >
-                { destination && (
+                {destination && (
                     <Directions
                         origin={region}
                         destination={destination}
                         onReady={result => {
+                            this.setState({ duration: Math.floor(result.duration) })                            
+
                             this.mapView.fitToCoordinates(result.coordinates, {
                                 edgePadding: {
-                                    top: 110,
-                                    bottom: 190,
-                                    left: 30,
-                                    right: 30,
+                                    top: getPixelSize(110),
+                                    bottom: getPixelSize(190),
+                                    left: getPixelSize(30),
+                                    right: getPixelSize(30),
                                 }
                             })
                         }}
@@ -48,7 +53,12 @@ export default class Map extends Component {
                         // description={patinete.busy}
                         coordinate={{
                             latitude: patinete.latitude, longitude: patinete.longitude
-                        }} />
+                        }}
+                    >
+                        {/* {duration != 0 && (
+                            <View><Text>{duration}</Text></View>
+                        )} */}
+                    </Marker>
                 ))}
             </MapView>
         );

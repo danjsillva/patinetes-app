@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import { Dimensions, StyleSheet, ScrollView, View, Image, Text } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Card from './Card'
 
 const { width, height } = Dimensions.get('window')
 
 export default class Cardsbar extends Component {
+    scrollToBegin = () => {
+        this.scrollView.scrollTo({ x: 0, y: 0, animated: true })
+    }
+
     render() {
         const { patinetes } = this.props
 
         return (
             <ScrollView
+                ref={el => this.scrollView = el}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
@@ -32,31 +38,51 @@ export default class Cardsbar extends Component {
 
                 }} style={styles.cardList}
             >
+                {/* {patinetes.map((patinete, index, patinetes) => (
+                    <Card
+                        key={patinete.id}
+                        currentPosition={false}
+                        data={patinete}
+                        index={index}
+                        total={patinetes.length}
+                        onPatineteSelected={this.props.onPatineteSelected}
+                        onPatineteUnlock={this.props.onPatineteUnlock}
+                    />
+                ))} */}
 
                 <View style={styles.card}>
                     <Image
                         source={require('../assets/banner.jpg')}
                         style={styles.img}
                     />
-                    
+
                     {patinetes.length > 0 ? (
                         <Text style={styles.info}>Encontramos {patinetes.length} patinetes na sua região</Text>
                     ) : (
-                        <Text style={styles.info}>Nenhum patinete na sua região</Text>
-                    )}
+                            <Text style={styles.info}>Nenhum patinete na sua região</Text>
+                        )}
 
-                    <View style={styles.line}></View>
+                    <View style={styles.button}>
+                        {patinetes.length > 0 ? (
+                            <Text style={styles.buttonText}>Navegue e escolha uma das opções <Icon name="arrow-circle-right" size={14} /></Text>
+                        ) : (
+                                <Text style={styles.buttonText}>Tente novamente mais tarde</Text>
+                            )}
+                    </View>
 
-                    {patinetes.length > 0 ? (
-                        <Text style={styles.hint}>Navegue entre as opções e escolha o mais próximo de você</Text>
-                    ) : (
-                        <Text style={styles.hint}>Tente novamente mais tarde</Text>
-                    )}
 
                 </View>
 
                 {patinetes.map((patinete, index, patinetes) => (
-                    <Card key={patinete.id} currentPosition={false} data={patinete} index={index} total={patinetes.length} onPatineteSelected={this.props.onPatineteSelected} />
+                    <Card
+                        key={patinete.id}
+                        currentPosition={false}
+                        data={patinete}
+                        index={index}
+                        total={patinetes.length}
+                        onPatineteSelected={this.props.onPatineteSelected}
+                        onPatineteUnlock={this.props.onPatineteUnlock}
+                    />
                 ))}
             </ScrollView>
         );
@@ -70,43 +96,45 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     cardList: {
-        width: '100%',
+        // width: '100%',
         maxHeight: 196,
     },
     card: {
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        width: width - 40,
+        width: width - 20,
         maxHeight: 200,
         backgroundColor: '#FFF',
-        marginHorizontal: 20,
-        marginVertical: 20,
-        padding: 20,
+        margin: 10,
+        padding: 10,
         elevation: 5,
         shadowColor: '#000',
         shadowOpacity: 0.5,
         shadowOffset: { x: 0, y: 0 },
-        shadowRadius: 15,
+        shadowRadius: 5,
     },
     img: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
+        width: 80,
+        height: 80,
+        borderRadius: 40,
         marginBottom: 10,
     },
     info: {
     },
-    line: {
-        width: width - 40,
-        marginHorizontal: 20,
-        marginVertical: 5,
-        borderBottomWidth: 3,
-        borderBottomColor: '#eee'
+    button: {
+        width: width - 20,
+        borderTopWidth: 1,
+        borderTopColor: '#eee',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 48,
+        // backgroundColor: '#000',
+        position: 'absolute',
+        bottom: 0,
     },
-    hint: {
-        marginTop: 8,
-        fontSize: 10,
+    buttonText: {
+        // fontSize: 10,
         color: '#777',
     },
 });

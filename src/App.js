@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native'
 import Map from './components/Map'
 import Topbar from './components/Topbar'
 import Cardsbar from './components/Cardsbar'
+import Scanner from './components/Scanner'
 
 export default class App extends Component {
   state = {
@@ -15,10 +16,16 @@ export default class App extends Component {
       { id: 4, code: 761326718, busy: false, battery: 52, latitude: -14.850392, longitude: -40.853703 },
       { id: 1, code: 980123765, busy: false, battery: 69, latitude: -14.859466, longitude: -40.827552 },
       { id: 5, code: 809662711, busy: true, battery: 36, latitude: -14.841416, longitude: -40.877323 },
-    ]
+    ],
+    openQRCodeScanner: false,
   }
 
   componentDidMount() {
+    this.handleCurrentLocationShow()
+  }
+
+  handleCurrentLocationPress = () => {
+    this.cardsbar.scrollToBegin()
     this.handleCurrentLocationShow()
   }
 
@@ -47,16 +54,38 @@ export default class App extends Component {
     this.setState({ destination: { latitude, longitude, title: 'teste' } })
   }
 
+  handlePatineteUnlock = () => {
+    this.setState({ openQRCodeScanner: true })
+  }
+
+  handleCodeLoaded = (e) => {
+    // alert(e.data)
+    this.setState({ openQRCodeScanner: false })
+  }
+
+  handleCancel = () => {
+    this.setState({ openQRCodeScanner: false })
+  }
+
   render() {
-    let { patinetes, region, destination } = this.state
+    let { patinetes, region, destination, openQRCodeScanner } = this.state
 
     return (
       <View style={styles.container}>
-        <Map ref={el => this.refs.mapView = el} patinetes={patinetes} region={region} destination={destination} />
+        <Map ref={el => this.mapView = el} patinetes={patinetes} region={region} destination={destination} />
 
-        <Topbar onCurrentLocationPress={this.handleCurrentLocationShow} />
+        <Topbar onCurrentLocationPress={this.handleCurrentLocationPress} />
 
-        <Cardsbar patinetes={patinetes} onCurrentLocationShow={this.handleCurrentLocationShow} onPatineteShow={this.handlePatineteShow} onPatineteSelected={this.handlePatineteSelected} />
+        <Scanner onCodeLoaded={this.handleCodeLoaded} onCancel={this.handleCancel} modalVisible={openQRCodeScanner}/>
+
+        <Cardsbar
+          ref={el => this.cardsbar = el}
+          patinetes={patinetes}
+          onCurrentLocationShow={this.handleCurrentLocationShow}
+          onPatineteShow={this.handlePatineteShow}
+          onPatineteSelected={this.handlePatineteSelected}
+          onPatineteUnlock={this.handlePatineteUnlock}
+        />
       </View>
     );
   }
